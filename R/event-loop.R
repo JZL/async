@@ -433,7 +433,9 @@ el__create_task <- function(self, private, callback, data, ..., id, type) {
 #' @importFrom curl new_pool
 
 el__ensure_pool <- function(self, private, ...) {
-  if (is.null(private$pool)) private$pool <- new_pool(...)
+  # The default curl new_pool has total_con=100, host_con=6. The 6 is killer!
+  # When polling an API (same host), 6 slows way way down
+  if (is.null(private$pool)) private$pool <- new_pool(total_con=500, host_con=500, ...)
 }
 
 el__get_poll_timeout <- function(self, private) {
